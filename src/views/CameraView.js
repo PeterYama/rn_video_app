@@ -3,10 +3,16 @@ import React, { useState, PureComponent } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import database from '@react-native-firebase/database';
+import RNFetchBlob from 'rn-fetch-blob'
 
-const reference = database().ref('/videos');
+const Blob = RNFetchBlob.polyfill.Blob
+const fs = RNFetchBlob.fs
+window.XMLHttpRequest = RNFetchBlob.polyfill.XMLHttpRequest
+window.Blob = Blob
+const imageRef = new database()
 
 export default class CameraView extends PureComponent {
+
     render() {
       return (
         <View style={styles.container}>
@@ -45,13 +51,14 @@ export default class CameraView extends PureComponent {
     takeVideo = async () => {
         if (this.camera) {
           try {
-            const promise = this.camera.recordAsync({maxDuration:5});
+            const promise = this.camera.recordAsync({maxDuration:2});
             if (promise) {
               this.setState({ isRecording: true });
               const data = await promise;
               this.setState({ isRecording: false });
-              this.upload(data);
-              console.warn('takeVideo', data);
+              this.uploadVideo(data.uri)
+              .then(url => { console.warn('uploaded'); this.setState({image_uri: url}) })
+              .catch(error => console.log(error))
             }
           } catch (e) {
             console.error(e);
@@ -59,45 +66,38 @@ export default class CameraView extends PureComponent {
         }
       };
 
-    upload = async (video) => {
-      const { uri } = video
-      const blob = this.uriToBlob(uri)
-      if (video !== null) {
-        this.writeUserData(blob)
-        console.warn('video data is: ' + uri)
-      }else {
-        console.warn('video is null')
-      }
-    }
 
-    uriToBlob = (uri) => {
+    uploadVideo(path, mime = 'application/octet-stream'){
+      const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : path
       return new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        xhr.onload = function() {
-          // return the blob
-          resolve(xhr.response);
-        };
-        
-        xhr.onerror = function() {
-          // something went wrong
-          reject(new Error('uriToBlob failed'));
-        };
-        // this helps us get a blob
-        xhr.responseType = 'blob';
-        xhr.open('GET', uri, true);
-        
-        xhr.send(null);
-      });
+          fs.readFile(uploadUri, 'base64')
+            .then((data) => {
+              return Blob.build(data, { type: `${mime};BASE64` })
+            })
+            .then((blob) => {
+              database()
+              .ref('/videos')
+              .set(blob, this.completedCallback(),{
+                contentType: mime,
+                })
+                .then(() => {return imageRef.set(blob, { contentType: mime })
+                .then(console.warn('uploaded' + data))})
+            })
+            .then(() => {
+              //do something else with the Url
+            })
+            .then((url) => {
+              resolve(url)
+            })
+            .catch((error) => {
+              reject(error)
+          })
+      })
     }
 
-    writeUserData = (blob) => {
-      database()
-        .ref('/videos')
-        .set({
-        video : blob
-      });
+    completedCallback(){
+      console.warn('completed')
     }
-    
       
   }
   
