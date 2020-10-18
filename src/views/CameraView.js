@@ -22,10 +22,9 @@ window.fetch = new Fetch({
   ]
 }).build()
 
-const reference = database().ref('/videos');
-
 export default class CameraView extends PureComponent {
   render() {
+    console.warn(this.props)
     return (
       <View style={styles.container}>
         <RNCamera
@@ -69,7 +68,7 @@ export default class CameraView extends PureComponent {
           const data = await promise;
           this.setState({ isRecording: false });
           this.upload(data.uri)
-            .then(url => { console.warn('uploaded'); this.setState({ fileUrl: url }) })
+            .then(url => { this.setState({ fileUrl: url }) })
             .catch(error => console.log(error))
         }
       } catch (e) {
@@ -92,22 +91,20 @@ export default class CameraView extends PureComponent {
         })})
         .then((blob) => {
           uploadBlob = blob
-          console.log(this.state)
-          return imageRef.ref('/videos').set({
+          return imageRef.ref('/videos'+ Math.floor(Math.random() * Math.floor(1000))).set({
             blob : uploadBlob,
             encodedData : this.state.encodedData,
           }, this.completedCallback())
         })
-        .then((res) => {
-          console.warn("URL", res)
+        .then(() => {
+          console.warn("Success")
         })
         .catch((error) => {
           reject(error)
         })
     })
   }
-
-
+  
   completedCallback() {
     console.warn('completed')
   }
