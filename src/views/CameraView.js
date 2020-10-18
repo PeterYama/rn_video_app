@@ -4,6 +4,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import database from '@react-native-firebase/database';
 import RNFetchBlob from 'rn-fetch-blob'
+import VideoList from './VideoList';
 
 const Blob = RNFetchBlob.polyfill.Blob
 const fs = RNFetchBlob.fs
@@ -93,6 +94,7 @@ export default class CameraView extends PureComponent {
           return imageRef.ref('/videos').set(blob, this.completedCallback())
         })
         .then((url) => {
+          // navigate to the next page
           resolve(url)
         })
         .catch((error) => {
@@ -103,6 +105,7 @@ export default class CameraView extends PureComponent {
 
 
   completedCallback() {
+    <VideoList/>
     console.warn('completed')
   }
 
