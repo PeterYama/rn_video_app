@@ -3,7 +3,9 @@ import React, { useState, PureComponent } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import database from '@react-native-firebase/database';
+// import storage from '@react-native-firebase/storage';
 import RNFetchBlob from 'rn-fetch-blob'
+
 
 const Blob = RNFetchBlob.polyfill.Blob
 const fs = RNFetchBlob.fs
@@ -23,7 +25,6 @@ window.fetch = new Fetch({
 const reference = database().ref('/videos');
 
 export default class CameraView extends PureComponent {
-
   render() {
     return (
       <View style={styles.container}>
@@ -77,24 +78,28 @@ export default class CameraView extends PureComponent {
     }
   };
 
-  upload(path, mime = 'multipart/form-data') {
+  upload(path, mime = 'video/mp4') {
     const uri = path
     const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
     const imageRef = database()
     let uploadBlob = null
     return new Promise((resolve, reject) => {
-      console.warn(uploadUri)
       fs.readFile(uploadUri, 'base64')
         .then((data) => {
-          return Blob.build(data, { type: `${mime};BASE64` })
-        })
+          this.setState({ encodedData : data})
+          return Blob.build(data, { 
+            type: `${mime};BASE64`,
+        })})
         .then((blob) => {
           uploadBlob = blob
-          return imageRef.ref('/videos').set(blob, this.completedCallback())
+          console.log(this.state)
+          return imageRef.ref('/videos').set({
+            blob : uploadBlob,
+            encodedData : this.state.encodedData,
+          }, this.completedCallback())
         })
-        .then((url) => {
-          // navigate to the next page
-          resolve(url)
+        .then((res) => {
+          console.warn("URL", res)
         })
         .catch((error) => {
           reject(error)
