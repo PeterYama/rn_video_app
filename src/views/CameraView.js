@@ -2,7 +2,9 @@
 import React, { useState, PureComponent } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { RNCamera } from 'react-native-camera';
+import database from '@react-native-firebase/database';
 
+const reference = database().ref('/videos');
 
 export default class CameraView extends PureComponent {
     render() {
@@ -48,6 +50,7 @@ export default class CameraView extends PureComponent {
               this.setState({ isRecording: true });
               const data = await promise;
               this.setState({ isRecording: false });
+              this.upload(data);
               console.warn('takeVideo', data);
             }
           } catch (e) {
@@ -55,6 +58,46 @@ export default class CameraView extends PureComponent {
           }
         }
       };
+
+    upload = async (video) => {
+      const { uri } = video
+      const blob = this.uriToBlob(uri)
+      if (video !== null) {
+        this.writeUserData(blob)
+        console.warn('video data is: ' + uri)
+      }else {
+        console.warn('video is null')
+      }
+    }
+
+    uriToBlob = (uri) => {
+      return new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        xhr.onload = function() {
+          // return the blob
+          resolve(xhr.response);
+        };
+        
+        xhr.onerror = function() {
+          // something went wrong
+          reject(new Error('uriToBlob failed'));
+        };
+        // this helps us get a blob
+        xhr.responseType = 'blob';
+        xhr.open('GET', uri, true);
+        
+        xhr.send(null);
+      });
+    }
+
+    writeUserData = (blob) => {
+      database()
+        .ref('/videos')
+        .set({
+        video : blob
+      });
+    }
+    
       
   }
   

@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "894217643125",
+    "firebase_url": "https://video-real-time-db.firebaseio.com",
+    "project_id": "video-real-time-db",
+    "storage_bucket": "video-real-time-db.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:894217643125:android:728176d670d999d5e4443c",
+        "android_client_info": {
+          "package_name": "com.videoproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "894217643125-ll5clqljl93buvg7gghmne0uv9ilnf5g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.videoproject",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "894217643125-1l745ltmp30a63a29v4epcocdr26f8gn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCSPDiGteCnlzjiX0evc9lN7al7Tb0a9K8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "894217643125-1l745ltmp30a63a29v4epcocdr26f8gn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
