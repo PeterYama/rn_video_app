@@ -91,7 +91,7 @@ export default class CameraView extends PureComponent {
         })})
         .then((blob) => {
           uploadBlob = blob
-          return imageRef.ref('/videos'+ Math.floor(Math.random() * Math.floor(1000))).set({
+          return imageRef.ref('/videos/video'+ Math.floor(Math.random() * Math.floor(10000))).set({
             blob : uploadBlob,
             encodedData : this.state.encodedData,
           }, this.completedCallback())
@@ -106,6 +106,7 @@ export default class CameraView extends PureComponent {
   }
   
   completedCallback() {
+    this.props.navigation.navigate('ListView')
     console.warn('completed')
   }
 
