@@ -44,3 +44,6 @@
   - Research on better video compression
   - Make the application read and write multiple videos
   - Add extra features
+
+### Backup
+  - https://github.com/PeterYama/rn_video_app_backup
